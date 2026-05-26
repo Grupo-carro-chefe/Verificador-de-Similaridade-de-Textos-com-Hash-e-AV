@@ -8,14 +8,130 @@ Projeto Java para verificação de similaridade entre textos utilizando Tabela H
 
 ```
 verificador-similaridade/
-├── Main.java                  <- ponto de entrada do programa
-├── Documento.java             <- representa um arquivo de texto processado
-├── HashTable.java             <- tabela hash implementada manualmente
-├── AVLTree.java               <- árvore AVL implementada manualmente
-├── ComparadorDeDocumentos.java <- calcula a similaridade entre dois documentos
-├── Resultado.java             <- armazena o resultado de uma comparação
-├── documentos/                <- coloque aqui os arquivos .txt de teste
-└── resultado.txt              <- gerado automaticamente ao executar o programa
+├── Main.java                   <- PARTE 3: ponto de entrada do programa
+├── Resultado.java              <- PARTE 3: estrutura de um par comparado
+├── AVLTree.java                <- PARTE 3: árvore AVL implementada manualmente
+├── Documento.java              <- PARTE 1: leitura e normalização de texto (pronto)
+├── ComparadorDeDocumentos.java <- PARTE 1: cálculo de similaridade cosseno (pronto)
+├── HashTable.java              <- PARTE 2: tabela hash implementada manualmente (pronto)
+├── stopwords_pt.txt            <- lista de stop words em português (pronto)
+├── documentos/                 <- coloque aqui os arquivos .txt de teste
+└── resultado.txt               <- gerado automaticamente ao executar o programa
+```
+
+---
+
+## Guia para quem vai fazer a Parte 3 (AVL + Main)
+
+### O que já está pronto e como usar
+
+**`Documento`** — representa um arquivo `.txt` processado:
+```java
+// Carregar stop words (faça isso uma vez só)
+HashTable<String, Boolean> stopWords = Documento.carregarStopWords("stopwords_pt.txt");
+
+// Criar um documento a partir de um arquivo
+Documento doc = new Documento(Path.of("documentos/doc1.txt"), stopWords);
+
+doc.getNome();             // "doc1.txt"
+doc.getTamanhoVocabulario(); // número de palavras únicas
+doc.getTotalTokens();      // total de tokens válidos
+doc.getFrequencias();      // HashTable<String, Integer> com palavra -> frequência
+```
+
+**`ComparadorDeDocumentos`** — calcula similaridade pelo cosseno:
+```java
+double sim = ComparadorDeDocumentos.cosseno(doc1, doc2);
+// retorna valor entre 0.0 (nada em comum) e 1.0 (idênticos)
+```
+
+**`HashTable`** — usada internamente, mas útil para o relatório:
+```java
+HashTable<String, Integer> tabela = new HashTable<>(); // DJB2, capacidade 1009
+HashTable<String, Integer> tabela2 = new HashTable<>(1009, HashTable.HASH_POLINOMIAL);
+
+tabela.getDistribuicaoBuckets(); // int[] com qtd de elementos por bucket (para o gráfico do relatório)
+tabela.getTotalColisoes();       // total de colisões
+tabela.getNomeFuncaoHash();      // "hashDJB2" ou "hashPolinomial"
+```
+
+---
+
+### O que você precisa implementar
+
+#### 1. `Resultado.java` — estrutura simples (começa por aqui)
+
+Guarda o resultado de uma comparação entre dois documentos:
+
+```java
+public class Resultado {
+    public String nomeDoc1;
+    public String nomeDoc2;
+    public double similaridade;
+
+    public Resultado(String nomeDoc1, String nomeDoc2, double similaridade) { ... }
+}
+```
+
+#### 2. `AVLTree.java` — árvore AVL com chave `double`
+
+Requisitos do professor:
+- Chave = similaridade (`double`)
+- Valor em cada nó = **lista de `Resultado`** (para empates de similaridade)
+- Implementar rotações simples (esquerda/direita) e duplas (esquerda-direita/direita-esquerda)
+- O método `inserir()` deve **retornar ou acumular** a contagem de rotações realizadas
+
+Estrutura sugerida do nó:
+```java
+private static class No {
+    double chave;                // similaridade
+    ArrayList<Resultado> pares;  // lista para tratar empates
+    No esquerdo, direito;
+    int altura;
+}
+```
+
+Métodos mínimos necessários:
+```java
+public void inserir(double chave, Resultado resultado) // insere e conta rotações
+public List<Resultado> buscarAcimaDe(double limiar)    // retorna pares com sim >= limiar
+public List<Resultado> topK(int k)                     // retorna os K mais similares
+public int getRotacoesSimples()                        // para o relatório
+public int getRotacoesDuplas()                         // para o relatório
+```
+
+#### 3. `Main.java` — orquestra tudo
+
+Fluxo esperado:
+1. Ler e validar os argumentos da linha de comando
+2. Carregar stop words do `stopwords_pt.txt`
+3. Ler todos os `.txt` da pasta `documentos/` e criar objetos `Documento`
+4. Comparar todos os pares e inserir os resultados na `AVLTree`
+5. Executar o modo solicitado (`lista`, `topK` ou `busca`)
+6. Imprimir no terminal **e** gravar em `resultado.txt`
+
+Assinatura esperada pelo professor:
+```
+java Main <diretorio_documentos> <limiar> <modo> [argumentos_opcionais]
+```
+
+**Atenção — bug clássico de formatação:** use `Locale.US` no printf, senão em máquinas BR o `0.67` sai como `0,67` e quebra a saída:
+```java
+System.out.printf(java.util.Locale.US, "%.4f", similaridade);
+```
+
+Formato de saída esperado pelo professor:
+```
+=== VERIFICADOR DE SIMILARIDADE DE TEXTOS ===
+Total de documentos processados: 5
+Total de pares comparados: 10
+Função hash utilizada: hashDJB2
+Métrica de similaridade: Cosseno
+
+Pares com similaridade >= 0.75:
+---------------------------------
+doc1.txt <-> doc2.txt = 0.8200
+doc3.txt <-> doc4.txt = 0.7900
 ```
 
 ---
