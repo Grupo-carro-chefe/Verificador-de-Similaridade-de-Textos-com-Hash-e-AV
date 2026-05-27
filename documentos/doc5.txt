@@ -1,0 +1,3 @@
+Estruturas de dados como árvores e grafos são fundamentais em ciência da computação.
+Algoritmos de busca e ordenação têm complexidades diferentes dependendo da estrutura utilizada.
+A análise de complexidade de algoritmos ajuda a escolher a melhor solução para cada problema.
