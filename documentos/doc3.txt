@@ -1,3 +1,1 @@
-Futebol é o esporte mais popular do Brasil, com milhões de torcedores apaixonados.
-Os times disputam campeonatos regionais e nacionais ao longo do ano.
-A Copa do Mundo é o maior torneio de futebol do mundo.
+Bancos de dados relacionais utilizam a linguagem SQL para armazenar, consultar e manipular grandes conjuntos de dados estruturados. Índices são estruturas de dados que aceleram as operações de busca e recuperação de informações em tabelas relacionais. O modelo relacional organiza dados em tabelas com linhas e colunas, garantindo integridade e consistência das informações armazenadas. Transações em bancos de dados garantem propriedades de atomicidade, consistência, isolamento e durabilidade nas operações realizadas. Sistemas gerenciadores de bancos de dados relacionais como PostgreSQL e MySQL são amplamente utilizados em aplicações corporativas para gestão de dados estruturados.

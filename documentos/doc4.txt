@@ -1,3 +1,1 @@
-O Brasil é um país conhecido pela paixão ao futebol e pelo talento dos seus jogadores.
-Campeonatos de futebol movimentam torcedores em todo o território nacional.
-A seleção brasileira disputou diversas finais de Copa do Mundo.
+Bancos de dados relacionais empregam a linguagem SQL para armazenar e consultar grandes volumes de dados estruturados de forma eficiente. Índices são estruturas auxiliares que melhoram o desempenho das operações de busca e recuperação de registros em tabelas relacionais. O modelo relacional representa dados em tabelas compostas por linhas e colunas, assegurando integridade e consistência das informações armazenadas. Propriedades de atomicidade, consistência, isolamento e durabilidade garantem a confiabilidade das transações em sistemas de bancos de dados. Gerenciadores relacionais como PostgreSQL e MySQL são amplamente adotados em aplicações corporativas para gestão eficiente de dados estruturados.

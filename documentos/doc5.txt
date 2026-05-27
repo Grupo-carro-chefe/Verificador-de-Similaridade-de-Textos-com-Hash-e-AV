@@ -1,3 +1,1 @@
-Estruturas de dados como árvores e grafos são fundamentais em ciência da computação.
-Algoritmos de busca e ordenação têm complexidades diferentes dependendo da estrutura utilizada.
-A análise de complexidade de algoritmos ajuda a escolher a melhor solução para cada problema.
+Futebol é o esporte mais popular do Brasil, movimentando milhões de torcedores apaixonados em todo o país. Os principais campeonatos nacionais reúnem equipes de diferentes estados disputando títulos ao longo de meses de competição intensa. A Copa do Mundo é o maior torneio de futebol do planeta, realizado a cada quatro anos pela FIFA com participação de seleções nacionais. Jogadores profissionais treinam diariamente para aprimorar técnica, velocidade e resistência física necessárias para alto rendimento. Estádios modernos recebem milhares de espectadores a cada partida, gerando grande movimentação econômica nas cidades sede.
