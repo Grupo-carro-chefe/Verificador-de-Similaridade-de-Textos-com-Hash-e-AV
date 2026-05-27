@@ -1,0 +1,3 @@
+Inteligência artificial e aprendizado de máquina transformaram diversas áreas da tecnologia.
+Modelos de aprendizado profundo são treinados com grandes volumes de dados rotulados.
+O processamento de linguagem natural evoluiu muito com o uso de redes neurais.

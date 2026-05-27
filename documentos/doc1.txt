@@ -1,0 +1,3 @@
+O aprendizado de máquina é um campo da inteligência artificial que permite sistemas aprenderem com dados.
+Algoritmos de aprendizado supervisionado utilizam exemplos rotulados para treinar modelos preditivos.
+Redes neurais profundas revolucionaram o processamento de imagens e linguagem natural.

@@ -1,0 +1,12 @@
+=== VERIFICADOR DE SIMILARIDADE DE TEXTOS ===
+Total de documentos processados: 2
+Total de pares comparados: 1
+Função hash utilizada: hashDJB2
+Métrica de similaridade: Cosseno
+
+Comparação direta: doc1.txt <-> doc2.txt
+---------------------------------
+doc1.txt <-> doc2.txt = 0.5559
+
+Rotações simples realizadas na AVL: 0
+Rotações duplas realizadas na AVL: 0
