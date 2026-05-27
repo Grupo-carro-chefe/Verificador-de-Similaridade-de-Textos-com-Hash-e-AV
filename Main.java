@@ -1,3 +1,15 @@
+/*
+ * ============================================================
+ *  Projeto Pratico 2 - Estrutura de Dados II
+ *  Verificador de Similaridade de Textos com Hash e AVL
+ *
+ *  Integrantes do grupo (PREENCHER nome completo e RA):
+ *    - Nome Completo - RA: 000000
+ *    - Nome Completo - RA: 000000
+ *    - Nome Completo - RA: 000000
+ * ============================================================
+ */
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -73,12 +85,10 @@ public class Main {
     // -------------------------------------------------------------------------
 
     private static void executar(String dirDocumentos, double limiar, String modo,
-                                  int k, String docBusca1, String docBusca2) throws IOException {
+                                 int k, String docBusca1, String docBusca2) throws IOException {
 
-        // 1. Carregar stop words
         HashTable<String, Boolean> stopWords = Documento.carregarStopWords("stopwords_pt.txt");
 
-        // 2. Carregar documentos
         Path dirPath = Paths.get(dirDocumentos);
         if (!Files.isDirectory(dirPath)) {
             System.err.println("Erro: diretorio nao encontrado: " + dirDocumentos);
@@ -86,21 +96,37 @@ public class Main {
             return;
         }
 
-        List<Documento> documentos = new ArrayList<>();
-
+        // ---------------------------------------------------------------------
+        // Modo busca: formato proprio e enxuto (conforme edital).
+        // Compara apenas os dois documentos informados.
+        // ---------------------------------------------------------------------
         if (modo.equals("busca")) {
-            // Carrega apenas os dois documentos solicitados
-            documentos.add(new Documento(dirPath.resolve(docBusca1), stopWords));
-            documentos.add(new Documento(dirPath.resolve(docBusca2), stopWords));
-        } else {
-            // Carrega todos os .txt do diretorio em ordem alfabetica
-            List<Path> arquivos = Files.list(dirPath)
-                    .filter(p -> p.getFileName().toString().toLowerCase().endsWith(".txt"))
-                    .sorted()
-                    .collect(Collectors.toList());
-            for (Path arquivo : arquivos) {
-                documentos.add(new Documento(arquivo, stopWords));
-            }
+            Documento d1 = new Documento(dirPath.resolve(docBusca1), stopWords);
+            Documento d2 = new Documento(dirPath.resolve(docBusca2), stopWords);
+            double sim = ComparadorDeDocumentos.cosseno(d1, d2);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== VERIFICADOR DE SIMILARIDADE DE TEXTOS ===\n");
+            sb.append("Comparando: ").append(d1.getNome())
+              .append(" <-> ").append(d2.getNome()).append('\n');
+            sb.append(String.format(Locale.US, "Similaridade calculada: %.2f\n", sim));
+            sb.append("Métrica utilizada: Cosseno\n");
+
+            gravarEImprimir(sb.toString());
+            return;
+        }
+
+        // ---------------------------------------------------------------------
+        // Modos lista / topK: carrega todos os .txt do diretorio
+        // ---------------------------------------------------------------------
+        List<Path> arquivos = Files.list(dirPath)
+                .filter(p -> p.getFileName().toString().toLowerCase().endsWith(".txt"))
+                .sorted()
+                .collect(Collectors.toList());
+
+        List<Documento> documentos = new ArrayList<>();
+        for (Path arquivo : arquivos) {
+            documentos.add(new Documento(arquivo, stopWords));
         }
 
         if (documentos.isEmpty()) {
@@ -108,10 +134,9 @@ public class Main {
             return;
         }
 
-        // 3. Comparar todos os pares e inserir resultados na AVL
+        // Compara todos os pares e insere os resultados na AVL
         AVLTree arvore = new AVLTree();
         int totalPares = 0;
-
         for (int i = 0; i < documentos.size(); i++) {
             for (int j = i + 1; j < documentos.size(); j++) {
                 Documento d1 = documentos.get(i);
@@ -122,36 +147,39 @@ public class Main {
             }
         }
 
-        // Nome da funcao hash usada internamente pelos documentos
         String nomeFuncaoHash = documentos.get(0).getFrequencias().getNomeFuncaoHash();
 
-        // 4. Montar saida
+        // Cabecalho comum
         StringBuilder sb = new StringBuilder();
         sb.append("=== VERIFICADOR DE SIMILARIDADE DE TEXTOS ===\n");
         sb.append("Total de documentos processados: ").append(documentos.size()).append('\n');
         sb.append("Total de pares comparados: ").append(totalPares).append('\n');
-        // "Função" = "Função"
         sb.append("Função hash utilizada: ").append(nomeFuncaoHash).append('\n');
-        // "Métrica" = "Métrica"
         sb.append("Métrica de similaridade: Cosseno\n");
         sb.append('\n');
 
         if (modo.equals("lista")) {
-            sb.append(String.format(Locale.US, "Pares com similaridade >= %.4f:\n", limiar));
+            sb.append(String.format(Locale.US, "Pares com similaridade >= %.2f:\n", limiar));
             sb.append("---------------------------------\n");
             List<Resultado> resultados = arvore.buscarAcimaDe(limiar);
-            // Ordena por similaridade decrescente para exibicao
             resultados.sort((a, b) -> Double.compare(b.similaridade, a.similaridade));
             if (resultados.isEmpty()) {
                 sb.append("Nenhum par encontrado acima do limiar.\n");
             } else {
                 for (Resultado r : resultados) {
-                    sb.append(String.format(Locale.US, "%s <-> %s = %.4f\n",
-                            r.nomeDoc1, r.nomeDoc2, r.similaridade));
+                    sb.append(formatarPar(r));
                 }
             }
 
-        } else if (modo.equals("topk")) {
+            sb.append('\n');
+            sb.append("Pares com menor similaridade:\n");
+            sb.append("---------------------------------\n");
+            List<Resultado> menores = arvore.menorSimilaridade();
+            for (Resultado r : menores) {
+                sb.append(formatarPar(r));
+            }
+
+        } else { // topk
             sb.append("Top ").append(k).append(" pares mais similares:\n");
             sb.append("---------------------------------\n");
             List<Resultado> resultados = arvore.topK(k);
@@ -159,40 +187,34 @@ public class Main {
                 sb.append("Nenhum par encontrado.\n");
             } else {
                 for (Resultado r : resultados) {
-                    sb.append(String.format(Locale.US, "%s <-> %s = %.4f\n",
-                            r.nomeDoc1, r.nomeDoc2, r.similaridade));
+                    sb.append(formatarPar(r));
                 }
-            }
-
-        } else { // busca
-            sb.append("Comparação direta: ")
-              .append(docBusca1).append(" <-> ").append(docBusca2).append('\n');
-            sb.append("---------------------------------\n");
-            List<Resultado> resultados = arvore.topK(1);
-            if (!resultados.isEmpty()) {
-                Resultado r = resultados.get(0);
-                sb.append(String.format(Locale.US, "%s <-> %s = %.4f\n",
-                        r.nomeDoc1, r.nomeDoc2, r.similaridade));
             }
         }
 
+        // Dados de rotacoes da AVL (coletados para o relatorio tecnico)
         sb.append('\n');
-        // "Rotações" = "Rotações"
         sb.append("Rotações simples realizadas na AVL: ")
           .append(arvore.getRotacoesSimples()).append('\n');
         sb.append("Rotações duplas realizadas na AVL: ")
           .append(arvore.getRotacoesDuplas()).append('\n');
 
-        String saida = sb.toString();
+        gravarEImprimir(sb.toString());
+    }
 
-        // 5. Imprimir no terminal e gravar em resultado.txt
+    /** Formata uma linha de par no padrao "docA.txt <-> docB.txt = 0.82". */
+    private static String formatarPar(Resultado r) {
+        return String.format(Locale.US, "%s <-> %s = %.2f\n",
+                r.nomeDoc1, r.nomeDoc2, r.similaridade);
+    }
+
+    /** Imprime no terminal e grava o mesmo conteudo em resultado.txt (UTF-8). */
+    private static void gravarEImprimir(String saida) throws IOException {
         System.out.print(saida);
-
         try (PrintWriter pw = new PrintWriter(
                 new OutputStreamWriter(new FileOutputStream("resultado.txt"), StandardCharsets.UTF_8))) {
             pw.print(saida);
         }
-
         System.out.println("Resultado salvo em resultado.txt");
     }
 }
