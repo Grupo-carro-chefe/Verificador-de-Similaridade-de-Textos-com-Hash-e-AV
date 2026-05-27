@@ -8,9 +8,9 @@ Projeto Java para verificação de similaridade entre textos utilizando Tabela H
 
 ```
 verificador-similaridade/
-├── Main.java                   <- PARTE 3: ponto de entrada do programa
-├── Resultado.java              <- PARTE 3: estrutura de um par comparado
-├── AVLTree.java                <- PARTE 3: árvore AVL implementada manualmente
+├── Main.java                   <- PARTE 3: ponto de entrada do programa (pronto)
+├── Resultado.java              <- PARTE 3: estrutura de um par comparado (pronto)
+├── AVLTree.java                <- PARTE 3: árvore AVL implementada manualmente (pronto)
 ├── Documento.java              <- PARTE 1: leitura e normalização de texto (pronto)
 ├── ComparadorDeDocumentos.java <- PARTE 1: cálculo de similaridade cosseno (pronto)
 ├── HashTable.java              <- PARTE 2: tabela hash implementada manualmente (pronto)
@@ -57,9 +57,11 @@ tabela.getNomeFuncaoHash();      // "hashDJB2" ou "hashPolinomial"
 
 ---
 
-### O que você precisa implementar
+### Parte 3 — implementada (Resultado, AVLTree e Main)
 
-#### 1. `Resultado.java` — estrutura simples (começa por aqui)
+> Status: **concluída**. As descrições abaixo documentam o que cada classe faz e a API disponível.
+
+#### 1. `Resultado.java` — estrutura simples
 
 Guarda o resultado de uma comparação entre dois documentos:
 
@@ -115,12 +117,12 @@ Assinatura esperada pelo professor:
 java Main <diretorio_documentos> <limiar> <modo> [argumentos_opcionais]
 ```
 
-**Atenção — bug clássico de formatação:** use `Locale.US` no printf, senão em máquinas BR o `0.67` sai como `0,67` e quebra a saída:
+**Atenção — bug clássico de formatação:** use `Locale.US` no printf, senão em máquinas BR o `0.67` sai como `0,67` e quebra a saída. O professor usa **2 casas decimais**:
 ```java
-System.out.printf(java.util.Locale.US, "%.4f", similaridade);
+System.out.printf(java.util.Locale.US, "%.2f", similaridade);
 ```
 
-Formato de saída esperado pelo professor:
+Formato de saída esperado pelo professor (modos `lista` e `topK`):
 ```
 === VERIFICADOR DE SIMILARIDADE DE TEXTOS ===
 Total de documentos processados: 5
@@ -130,8 +132,20 @@ Métrica de similaridade: Cosseno
 
 Pares com similaridade >= 0.75:
 ---------------------------------
-doc1.txt <-> doc2.txt = 0.8200
-doc3.txt <-> doc4.txt = 0.7900
+doc1.txt <-> doc2.txt = 0.82
+doc3.txt <-> doc4.txt = 0.79
+
+Pares com menor similaridade:
+---------------------------------
+doc1.txt <-> doc5.txt = 0.12
+```
+
+O modo `busca` tem um formato próprio e enxuto:
+```
+=== VERIFICADOR DE SIMILARIDADE DE TEXTOS ===
+Comparando: doc1.txt <-> doc4.txt
+Similaridade calculada: 0.67
+Métrica utilizada: Cosseno
 ```
 
 ---

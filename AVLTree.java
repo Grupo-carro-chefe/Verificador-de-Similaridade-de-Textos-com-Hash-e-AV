@@ -189,6 +189,21 @@ public class AVLTree {
         traversalDescendente(no.esquerdo, lista);
     }
 
+    /**
+     * Retorna os pares com a menor similaridade (no mais a esquerda da arvore).
+     * Pode haver mais de um par caso ocorra empate na menor similaridade.
+     */
+    public List<Resultado> menorSimilaridade() {
+        List<Resultado> lista = new ArrayList<>();
+        No no = raiz;
+        if (no == null) return lista;
+        while (no.esquerdo != null) {
+            no = no.esquerdo;
+        }
+        lista.addAll(no.pares);
+        return lista;
+    }
+
     // -------------------------------------------------------------------------
     // Estatisticas para o relatorio
     // -------------------------------------------------------------------------
